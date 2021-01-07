@@ -459,7 +459,13 @@ def database_exists(url):
 
     url = copy(make_url(url))
     database = url.database
-    url = url.set(database=None)
+
+    if url.drivername.startswith('postgres'):
+        url = url.set(database='postgres')
+    elif url.drivername.startswith('mssql'):
+        url = url.set(database='master')
+    elif not url.drivername.startswith('sqlite'):
+        url = url.set(database=None)
     engine = sa.create_engine(url)
 
     if engine.dialect.name == 'postgresql':
